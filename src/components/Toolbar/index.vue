@@ -83,8 +83,15 @@
       :class="addGroup?'':'disable'"
       @click="handleAddGroup"
     ></i>
-    <i data-command="unGroup" class="command iconfont icon-ungroup disable" title="解组"></i>
-    <el-button @click="consoleData" type="primary">控制台输出数据</el-button>
+    <i
+      data-command="unGroup"
+      class="command iconfont icon-ungroup disable"
+      title="解组"
+    ></i>
+    <el-button
+      @click="consoleData"
+      type="primary"
+    >控制台输出数据</el-button>
   </div>
 </template>
 
@@ -128,18 +135,25 @@ export default {
     bindEvent() {
       let self = this;
       eventBus.$on("afterAddPage", page => {
+        console.log('afterAddPage')
         self.page = page;
         self.graph = self.page.graph;
       });
       eventBus.$on("add", data => {
+        console.log('add')
+
         this.redoList = data.redoList;
         this.undoList = data.undoList;
       });
        eventBus.$on("update", data => {
+        console.log('update')
+
         this.redoList = data.redoList;
         this.undoList = data.undoList;
       });
        eventBus.$on("delete", data => {
+        console.log('delete')
+
         this.redoList = data.redoList;
         this.undoList = data.undoList;
       });
@@ -150,18 +164,25 @@ export default {
         this.command.executeCommand("add", [item]);
       });
       eventBus.$on("nodeselectchange", () => {
+        console.log('nodeselectchange')
+
         this.selectedItem = this.graph.findAllByState("node", "selected");
         this.selectedItem = this.selectedItem.concat(
           ...this.graph.findAllByState("edge", "selected")
         );
       });
       eventBus.$on("deleteItem", () => {
+        console.log('deleteItem')
+
         this.handleDelete();
       });
       eventBus.$on("muliteSelectEnd", () => {
+        console.log('muliteSelectEnd')
+
         this.multiSelect = false;
         this.selectedItem = this.graph.findAllByState("node", "selected");
       });
+
     },
     handleUndo() {
       if (this.undoList.length > 0) this.command.undo();

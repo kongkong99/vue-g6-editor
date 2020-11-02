@@ -5,7 +5,7 @@
 <script>
 import customNode from "./customNode";
 import customEdge from "./customEdge";
-import teamNode from './teamNode'
+// import teamNode from './teamNode'
 export default {
   name:'Flow',
   data() {
@@ -20,7 +20,7 @@ export default {
     init() {
       customNode.init();
       customEdge.init();
-      teamNode.init();
+      // teamNode.init();
     }
   }
 };

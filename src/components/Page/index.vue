@@ -1,18 +1,28 @@
 <template>
   <div class="page">
-    <div :id="pageId" class="graph-container" style="position: relative;"></div>
+    <div
+      :id="pageId"
+      class="graph-container"
+      style="position: relative;"
+    ></div>
   </div>
 </template>
 
 
 <script>
+import eventBus from "@/utils/eventBus";
 import G6 from "@antv/g6/build/g6";
 import { initBehavors } from "@/behavior";
+import Editor from "@/components/Base/Editor";
+import command from "@/command";
 export default {
   data() {
     return {
       pageId: "graph-container",
-      graph: null
+      graph: null,
+      selectedItem: [],
+      editor: {},
+      command: null,
     };
   },
   props: {
@@ -30,12 +40,13 @@ export default {
     }
   },
   created() {
+
+    this.bindEvent()
     initBehavors();
+
   },
   mounted() {
-    this.$nextTick(() => {
       this.init();
-    });
   },
   methods: {
     init() {
@@ -63,9 +74,7 @@ export default {
           moveNode:[ "drag-item"]
         }
       });
-      const { editor, command } = this.$parent;
-      editor.emit("afterAddPage", { graph: this.graph, command });
-
+      this.editor.emit("afterAddPage", { graph: this.graph, command:this.command });
       this.readData();
     },
     readData() {
@@ -73,14 +82,39 @@ export default {
       if (data) {
         this.graph.read(data);
       }
+    },
+    bindEvent() {
+      this.editor = new Editor();
+      this.command = new command(this.editor);
+      eventBus.$on("updateItem", item => {
+        this.command.executeCommand("update", [item]);
+      });
+      eventBus.$on("addItem", item => {
+        this.command.executeCommand("add", [item]);
+      });
+      eventBus.$on("nodeselectchange", () => {
+        this.selectedItem = this.graph.findAllByState("node", "selected");
+        this.selectedItem = this.selectedItem.concat(
+          ...this.graph.findAllByState("edge", "selected")
+        );
+      });
+      eventBus.$on("deleteItem", () => {
+        this.handleDelete();
+      });
+    },
+    handleDelete() {
+      if (this.selectedItem.length > 0) {
+        this.command.executeCommand("delete", this.selectedItem);
+        this.selectedItem = null;
+      }
     }
+
   }
 };
 </script>
 
 <style scoped>
-.page{
-  margin-left:200px;
-  margin-right: 200px;
+.page {
+  margin-left: 200px;
 }
 </style>

@@ -36,9 +36,10 @@ class command {
             this.doCommand(key, model)
 
         });
+        console.log(list)
         this.undoList.push({ key, datas: list })
-        if(key==='delete'){
-            this.redoList =[]
+        if (key === 'delete') {
+            this.redoList = []
         }
         this.editor.emit(key, { undoList: this.undoList, redoList: this.redoList })
     }
